@@ -1,6 +1,8 @@
 #ifndef SOCKET_UWS_H
 #define SOCKET_UWS_H
 
+#include <string>
+#include "uuid/uuid.h"
 #include "Networking.h"
 
 namespace uS {
@@ -33,6 +35,7 @@ protected:
     SSL *ssl;
     void *user = nullptr;
     NodeData *nodeData;
+    std::string uid;
 
     // this is not needed by HttpSocket!
     struct Queue {
@@ -417,6 +420,12 @@ public:
             SSL_set_fd(ssl, (int) fd);
             SSL_set_mode(ssl, SSL_MODE_RELEASE_BUFFERS);
         }
+
+        uuid_t uu;
+        char buf[1024];
+        uuid_generate(uu);
+        uuid_unparse(uu,buf);
+        uid = std::string(buf);
     }
 
     NodeData *getNodeData() {
@@ -486,6 +495,10 @@ public:
 
     bool isShuttingDown() {
         return state.shuttingDown;
+    }
+
+    const std::string& get_uid() const {
+        return uid;
     }
 
     friend class Node;

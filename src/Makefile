@@ -43,7 +43,7 @@ clean:
 
 .PHONY: install
 install:
-	$(eval PREFIX ?= /usr)
+	$(eval PREFIX ?= /usr/local/)
 	if [ -d "/usr/lib64" ]; then mkdir -p $(PREFIX)/lib64 && cp ../libuWS.so $(PREFIX)/lib64/; else mkdir -p $(PREFIX)/lib && cp ../libuWS.so $(PREFIX)/lib/; fi
 	mkdir -p $(PREFIX)/include/uWS
 	cp ../src/*.h $(PREFIX)/include/uWS/
