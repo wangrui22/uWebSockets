@@ -357,32 +357,33 @@ protected:
         size_t estimatedLength = T::estimate(message, length) + sizeof(Queue::Message);
 
         if (hasEmptyQueue()) {
-            if (estimatedLength <= uS::NodeData::preAllocMaxSize) {
-                int memoryLength = (int) estimatedLength;
-                int memoryIndex = nodeData->getMemoryBlockIndex(memoryLength);
+            // if (estimatedLength <= uS::NodeData::preAllocMaxSize) {
+            //     int memoryLength = (int) estimatedLength;
+            //     int memoryIndex = nodeData->getMemoryBlockIndex(memoryLength);
 
-                Queue::Message *messagePtr = (Queue::Message *) nodeData->getSmallMemoryBlock(memoryIndex);
-                messagePtr->data = ((char *) messagePtr) + sizeof(Queue::Message);
-                messagePtr->length = T::transform(message, (char *) messagePtr->data, length, transformData);
+            //     Queue::Message *messagePtr = (Queue::Message *) nodeData->getSmallMemoryBlock(memoryIndex);
+            //     messagePtr->data = ((char *) messagePtr) + sizeof(Queue::Message);
+            //     messagePtr->length = T::transform(message, (char *) messagePtr->data, length, transformData);
 
-                bool wasTransferred;
-                if (write(messagePtr, wasTransferred)) {
-                    if (!wasTransferred) {
-                        nodeData->freeSmallMemoryBlock((char *) messagePtr, memoryIndex);
-                        if (callback) {
-                            callback(this, callbackData, false, nullptr);
-                        }
-                    } else {
-                        messagePtr->callback = callback;
-                        messagePtr->callbackData = callbackData;
-                    }
-                } else {
-                    nodeData->freeSmallMemoryBlock((char *) messagePtr, memoryIndex);
-                    if (callback) {
-                        callback(this, callbackData, true, nullptr);
-                    }
-                }
-            } else {
+            //     bool wasTransferred;
+            //     if (write(messagePtr, wasTransferred)) {
+            //         if (!wasTransferred) {
+            //             nodeData->freeSmallMemoryBlock((char *) messagePtr, memoryIndex);
+            //             if (callback) {
+            //                 callback(this, callbackData, false, nullptr);
+            //             }
+            //         } else {
+            //             messagePtr->callback = callback;
+            //             messagePtr->callbackData = callbackData;
+            //         }
+            //     } else {
+            //         nodeData->freeSmallMemoryBlock((char *) messagePtr, memoryIndex);
+            //         if (callback) {
+            //             callback(this, callbackData, true, nullptr);
+            //         }
+            //     }
+            // } else 
+            {
                 Queue::Message *messagePtr = allocMessage(estimatedLength - sizeof(Queue::Message));
                 messagePtr->length = T::transform(message, (char *) messagePtr->data, length, transformData);
 
