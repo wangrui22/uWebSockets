@@ -328,17 +328,22 @@ protected:
                     }
                 }
             } else {
-                sent = ::send(getFd(), message->data, message->length, MSG_NOSIGNAL);
-                if (sent == (ssize_t) message->length) {
-                    wasTransferred = false;
-                    return true;
-                } else if (sent == SOCKET_ERROR) {
-                    if (!nodeData->netContext->wouldBlock()) {
-                        return false;
+                while (true) {
+                    sent = ::send(getFd(), message->data, message->length, MSG_NOSIGNAL);
+                    if (sent == (ssize_t) message->length) {
+                        wasTransferred = false;
+                        return true;
+                    } else if (sent == SOCKET_ERROR && errno == EINTR) {
+                        continue;
+                    } else if (sent == SOCKET_ERROR) {
+                        if (!nodeData->netContext->wouldBlock()) {
+                            return false;
+                        }
+                    } else {
+                        message->length -= sent;
+                        message->data += sent;
+                        continue;
                     }
-                } else {
-                    message->length -= sent;
-                    message->data += sent;
                 }
 
                 if ((getPoll() & UV_WRITABLE) == 0) {
